@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>To-Do Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 40px;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    #taskInput {
+      padding: 10px;
+      width: 60%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin-left: 10px;
+      border: none;
+      border-radius: 4px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .task-item {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .task-text {
+      flex-grow: 1;
+      margin-right: 20px;
+    }
+
+    .task-item button {
+      background-color: rgb(245, 245, 19);
+    }
+
+    .task-item button:last-child {
+      background-color: #f83223;
+    }
+
+    .task-item button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Welcome!</h2>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <div style="width: 80%; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+    <input type="text" id="taskInput" placeholder="Enter a new task..." />
+    <button onclick="addTask()">Add</button>
+  </div>
+
+  <div id="tasks" style="width: 80vw; display: flex;flex-direction: column; justify-content: center; align-items: center; margin-bottom: 20px;"></div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("currentUser");
+      window.location.href = "login.html";
+    }
+
+    function loadTasks() {
+        let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      let users = JSON.parse(localStorage.getItem("user"));
+      let user = users.find(user => user.email === currentUser);
+
+      let tasksContainer = document.getElementById("tasks");
+      tasksContainer.innerHTML = "";
+
+      if (!user || !user.tasks) return;
+
+      user.tasks.forEach((task, index) => {
+        let taskDiv = document.createElement("div");
+        taskDiv.className = "task-item";
+
+        taskDiv.innerHTML = `
+          <div class="task-text">${task}</div>
+          <button onclick="editTask(${index})">Edit</button>
+          <button onclick="deleteTask(${index})">Delete</button>
+        `;
+
+        tasksContainer.appendChild(taskDiv);
+      });
+    }
+
+    function addTask() {
+      let taskInput = document.getElementById("taskInput").value.trim();
+      if (taskInput === "") {
+        alert("Please enter a task");
+        return;
+      }
+
+      let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      let users = JSON.parse(localStorage.getItem("user"));
+      let userInd = users.findIndex(user => user.email === currentUser);
+
+      if (userInd !== -1) {
+        if (!Array.isArray(users[userInd].tasks)) users[userInd].tasks = [];
+        users[userInd].tasks.push(taskInput);
+        localStorage.setItem("user", JSON.stringify(users));
+        document.getElementById("taskInput").value = "";
+        loadTasks();
+      }
+    }
+
+    function editTask(index) {
+      let newTask = prompt("Enter new task:");
+      if (newTask === null || newTask.trim() === "") {
+        alert("Task cannot be empty.");
+        return;
+      }
+
+      let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      let users = JSON.parse(localStorage.getItem("user"));
+      let userInd = users.findIndex(user => user.email === currentUser);
+
+      if (userInd !== -1) {
+        users[userInd].tasks[index] = newTask.trim();
+        localStorage.setItem("user", JSON.stringify(users));
+        loadTasks();
+      }
+    }
+
+    function deleteTask(index) {
+        let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      let users = JSON.parse(localStorage.getItem("user"));
+      let userInd = users.findIndex(user => user.email === currentUser);
+
+      if (userInd !== -1) {
+        users[userInd].tasks.splice(index, 1);
+        localStorage.setItem("user", JSON.stringify(users));
+        loadTasks();
+      }
+    }
+
+    if (window.location.pathname.includes("home.html")) {
+      window.onload = loadTasks;
+    }
+  </script>
+</body>
+</html>

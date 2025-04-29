@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogIn</title>
+    <style>
+        * {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f0f2f5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+form {
+  background-color: #ffffff;
+  padding: 30px 40px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  gap: 15px;
+}
+
+input[type="email"],
+input[type="password"] {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #4CAF50;
+  outline: none;
+}
+
+input[type="submit"] {
+  padding: 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+    </style>
+
+</head>
+<body>
+    
+    <form action="">
+        <h1 style="text-align: center;">Login</h1>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="password" required>
+        <input type="submit" id="login" value="login">
+
+    </form>
+    <script>
+        let submit = document.getElementById("login");
+      
+        submit.addEventListener("click", function (event) {
+          event.preventDefault();
+      
+          let email = document.getElementById("email").value.trim();
+          let password = document.getElementById("password").value.trim();
+      
+          let users = JSON.parse(localStorage.getItem("user")) || [];
+      
+          let matchedUser = users.find(user => user.email === email && user.password === password);
+      
+          if (matchedUser) {
+            localStorage.setItem("currentUser", JSON.stringify(email));
+            alert("Successfully Logged In");
+            window.location.href = "./home.html"; // Make sure this file exists
+          } else {
+            alert("Invalid email or password");
+          }
+        });
+      </script>
+      
+</body>
+</html>
